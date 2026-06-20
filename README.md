@@ -1,6 +1,8 @@
-<p align="center"><img src="https://raw.githubusercontent.com/go-composites/brand/main/social/golang-oop.png" alt="go-composites/number" width="720"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/go-composites/brand/main/social/go-composites.png" alt="go-composites/number" width="720"></p>
 
 # Number
+
+[![ci](https://github.com/go-composites/number/actions/workflows/ci.yml/badge.svg)](https://github.com/go-composites/number/actions/workflows/ci.yml)
 
 A small numeric composite for **Composition-Oriented Programming**. A `Number`
 wraps a Go `int64` or `float64` value and exposes its arithmetic as **fallible
