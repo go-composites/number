@@ -83,9 +83,15 @@ Conversions
 
 Arithmetic (each returns `Result.Interface`)
 
-- `Add(other) Result` / `Sub(other) Result` / `Mul(other) Result`.
+- `Add(other) Result` / `Sub(other) Result` / `Mul(other) Result` — the result
+  stays an integer only when both operands are integers, otherwise it is a float.
 - `Div(other) Result` — a `Result` carrying `Error.New("division by zero")`
   when `other` is zero.
+- `Mod(other) Result` — remainder (Go `%` for two integers, `math.Mod`
+  otherwise); a `Result` carrying `Error.New("modulo by zero")` when `other` is
+  zero.
+- `Abs() Result` / `Neg() Result` — absolute value and negation, preserving the
+  integer / float kind.
 
 Comparisons (each returns `Boolean.Interface`)
 
