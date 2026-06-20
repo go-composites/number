@@ -2,6 +2,7 @@ package Number
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 
 	Boolean "github.com/go-composites/boolean/src"
@@ -26,6 +27,9 @@ type Interface interface {
 	Sub(Interface) Result.Interface
 	Mul(Interface) Result.Interface
 	Div(Interface) Result.Interface
+	Mod(Interface) Result.Interface
+	Abs() Result.Interface
+	Neg() Result.Interface
 	Equal(Interface) Boolean.Interface
 	LessThan(Interface) Boolean.Interface
 	GreaterThan(Interface) Boolean.Interface
@@ -195,6 +199,61 @@ func (d data) Div(other Interface) Result.Interface {
 	return Result.New(
 		Result.WithPayload(
 			build(d.value/other.ToGoFloat(), d.isInt, other),
+		),
+	)
+}
+
+/*
+Mod returns a Result whose payload is the remainder of the receiver divided by
+other.
+
+Integer operands use Go's % operator; if either operand is a float the
+remainder is computed with math.Mod. When other is zero the Result carries an
+Error ("modulo by zero") instead of a payload — the operation never panics and
+never returns nil.
+*/
+func (d data) Mod(other Interface) Result.Interface {
+	if other.ToGoFloat() == 0 {
+		return Result.New(
+			Result.WithError(
+				Error.New("modulo by zero"),
+			),
+		)
+	}
+	if d.isInt && other.IsInt() {
+		return Result.New(
+			Result.WithPayload(
+				build(float64(d.ToGoInt()%other.ToGoInt()), d.isInt, other),
+			),
+		)
+	}
+	return Result.New(
+		Result.WithPayload(
+			build(math.Mod(d.value, other.ToGoFloat()), d.isInt, other),
+		),
+	)
+}
+
+/*
+Abs returns a Result whose payload is the absolute value of the receiver,
+preserving its integer or floating-point kind.
+*/
+func (d data) Abs() Result.Interface {
+	return Result.New(
+		Result.WithPayload(
+			&data{value: math.Abs(d.value), isInt: d.isInt},
+		),
+	)
+}
+
+/*
+Neg returns a Result whose payload is the negation of the receiver, preserving
+its integer or floating-point kind.
+*/
+func (d data) Neg() Result.Interface {
+	return Result.New(
+		Result.WithPayload(
+			&data{value: -d.value, isInt: d.isInt},
 		),
 	)
 }

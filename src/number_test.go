@@ -87,6 +87,58 @@ var _ = ginkgo.Describe("Number", func() {
 				gomega.Expect(r.HasError()).To(gomega.BeTrue())
 			})
 		})
+
+		ginkgo.Describe("modulo", func() {
+			ginkgo.It("computes the integer remainder", func() {
+				r := six.Mod(Number.New(Number.WithInt(4)))
+				gomega.Expect(r.HasError()).To(gomega.BeFalse())
+				gomega.Expect(r.Payload().(Number.Interface).IsInt()).To(gomega.BeTrue())
+				gomega.Expect(r.Payload().(Number.Interface).ToGoInt()).To(gomega.BeEquivalentTo(2))
+			})
+			ginkgo.It("computes the float remainder when an operand is a float", func() {
+				r := six.Mod(Number.New(Number.WithFloat(2.5)))
+				gomega.Expect(r.HasError()).To(gomega.BeFalse())
+				gomega.Expect(r.Payload().(Number.Interface).IsFloat()).To(gomega.BeTrue())
+				gomega.Expect(r.Payload().(Number.Interface).ToGoFloat()).To(gomega.BeEquivalentTo(1.0))
+			})
+			ginkgo.It("returns a Result carrying an error on modulo by zero", func() {
+				r := six.Mod(Number.New())
+				gomega.Expect(r.HasError()).To(gomega.BeTrue())
+				gomega.Expect(r.Error().Message()).To(gomega.Equal("modulo by zero"))
+			})
+		})
+
+		ginkgo.Describe("absolute value", func() {
+			ginkgo.It("makes a negative int positive", func() {
+				r := Number.New(Number.WithInt(-7)).Abs()
+				gomega.Expect(r.HasError()).To(gomega.BeFalse())
+				gomega.Expect(r.Payload().(Number.Interface).IsInt()).To(gomega.BeTrue())
+				gomega.Expect(r.Payload().(Number.Interface).ToGoInt()).To(gomega.BeEquivalentTo(7))
+			})
+			ginkgo.It("leaves a positive float unchanged in magnitude", func() {
+				r := Number.New(Number.WithFloat(2.5)).Abs()
+				gomega.Expect(r.Payload().(Number.Interface).IsFloat()).To(gomega.BeTrue())
+				gomega.Expect(r.Payload().(Number.Interface).ToGoFloat()).To(gomega.BeEquivalentTo(2.5))
+			})
+			ginkgo.It("makes a negative float positive", func() {
+				r := Number.New(Number.WithFloat(-2.5)).Abs()
+				gomega.Expect(r.Payload().(Number.Interface).ToGoFloat()).To(gomega.BeEquivalentTo(2.5))
+			})
+		})
+
+		ginkgo.Describe("negation", func() {
+			ginkgo.It("negates an int preserving its kind", func() {
+				r := Number.New(Number.WithInt(7)).Neg()
+				gomega.Expect(r.HasError()).To(gomega.BeFalse())
+				gomega.Expect(r.Payload().(Number.Interface).IsInt()).To(gomega.BeTrue())
+				gomega.Expect(r.Payload().(Number.Interface).ToGoInt()).To(gomega.BeEquivalentTo(-7))
+			})
+			ginkgo.It("negates a float preserving its kind", func() {
+				r := Number.New(Number.WithFloat(2.5)).Neg()
+				gomega.Expect(r.Payload().(Number.Interface).IsFloat()).To(gomega.BeTrue())
+				gomega.Expect(r.Payload().(Number.Interface).ToGoFloat()).To(gomega.BeEquivalentTo(-2.5))
+			})
+		})
 	})
 
 	ginkgo.Describe("comparisons", func() {

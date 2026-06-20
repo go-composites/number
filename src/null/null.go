@@ -75,6 +75,18 @@ func (d data) Div(Number.Interface) Result.Interface {
 	return notImplemented(`Div`)
 }
 
+func (d data) Mod(Number.Interface) Result.Interface {
+	return notImplemented(`Mod`)
+}
+
+func (d data) Abs() Result.Interface {
+	return notImplemented(`Abs`)
+}
+
+func (d data) Neg() Result.Interface {
+	return notImplemented(`Neg`)
+}
+
 func (d data) Equal(other Number.Interface) Boolean.Interface {
 	return Boolean.New(other.IsNull())
 }

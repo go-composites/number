@@ -44,6 +44,21 @@ var _ = ginkgo.Describe("NullNumber", func() {
 		gomega.Expect(r.HasError()).To(gomega.BeTrue())
 		gomega.Expect(r.Error().Message()).To(gomega.ContainSubstring("Div"))
 	})
+	ginkgo.It("Mod returns an error result", func() {
+		r := n.Mod(Number.New())
+		gomega.Expect(r.HasError()).To(gomega.BeTrue())
+		gomega.Expect(r.Error().Message()).To(gomega.ContainSubstring("Mod"))
+	})
+	ginkgo.It("Abs returns an error result", func() {
+		r := n.Abs()
+		gomega.Expect(r.HasError()).To(gomega.BeTrue())
+		gomega.Expect(r.Error().Message()).To(gomega.ContainSubstring("Abs"))
+	})
+	ginkgo.It("Neg returns an error result", func() {
+		r := n.Neg()
+		gomega.Expect(r.HasError()).To(gomega.BeTrue())
+		gomega.Expect(r.Error().Message()).To(gomega.ContainSubstring("Neg"))
+	})
 	ginkgo.It("Equal is true only against another null", func() {
 		gomega.Expect(n.Equal(NullNumber.New()).ToGoBool()).To(gomega.BeTrue())
 		gomega.Expect(n.Equal(Number.New()).ToGoBool()).To(gomega.BeFalse())
