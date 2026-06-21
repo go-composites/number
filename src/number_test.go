@@ -57,6 +57,11 @@ var _ = ginkgo.Describe("Number", func() {
 			gomega.Expect(r.HasError()).To(gomega.BeFalse())
 			gomega.Expect(r.Payload().(Number.Interface).ToGoInt()).To(gomega.BeEquivalentTo(8))
 		})
+		ginkgo.It("adds large integers beyond the small-int cache", func() {
+			big := Number.New(Number.WithInt(1000)) // out of the cache band
+			r := big.Add(big)
+			gomega.Expect(r.Payload().(Number.Interface).ToGoInt()).To(gomega.BeEquivalentTo(2000))
+		})
 		ginkgo.It("subtracts two numbers", func() {
 			r := six.Sub(two)
 			gomega.Expect(r.Payload().(Number.Interface).ToGoInt()).To(gomega.BeEquivalentTo(4))

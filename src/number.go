@@ -79,6 +79,30 @@ Called without a functional parameter it yields the integer zero.
 	n2 := Number.New(Number.WithInt(42))     // 42  (int)
 	n3 := Number.New(Number.WithFloat(3.5))  // 3.5 (float)
 */
+// Small integers are immutable and overwhelmingly the common case, so a fixed
+// band of them is interned once (the technique every dynamic-language runtime
+// uses for fixnums). cachedInt returns the shared instance when v is in band.
+const (
+	cacheMin = -128
+	cacheMax = 256
+)
+
+var smallInts = func() [cacheMax - cacheMin + 1]Interface {
+	var a [cacheMax - cacheMin + 1]Interface
+	for i := range a {
+		a[i] = &data{value: float64(cacheMin + i), isInt: true}
+	}
+	return a
+}()
+
+func cachedInt(v float64) (Interface, bool) {
+	iv := int64(v)
+	if float64(iv) == v && iv >= cacheMin && iv <= cacheMax {
+		return smallInts[iv-cacheMin], true
+	}
+	return nil, false
+}
+
 func New(options ...Option) Interface {
 	d := &data{
 		value: 0,
@@ -86,6 +110,15 @@ func New(options ...Option) Interface {
 	}
 	for _, opt := range options {
 		opt(d)
+	}
+	// Return the shared instance for an in-band small integer (interning: the
+	// constructed d is discarded, so the alloc count is unchanged, but equal
+	// small Numbers now share storage and identity). The real allocation win is
+	// in build() — the arithmetic-result path, which has no options to apply.
+	if d.isInt {
+		if c, ok := cachedInt(d.value); ok {
+			return c
+		}
 	}
 	return d
 }
@@ -144,6 +177,9 @@ func (d data) IsNull() bool {
 // are integers (mirroring Go's numeric tower for these operations).
 func build(value float64, lhsInt bool, rhs Interface) Interface {
 	if lhsInt && rhs.IsInt() {
+		if c, ok := cachedInt(value); ok {
+			return c
+		}
 		return &data{value: value, isInt: true}
 	}
 	return &data{value: value, isInt: false}
