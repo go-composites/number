@@ -81,7 +81,8 @@ Called without a functional parameter it yields the integer zero.
 */
 // Small integers are immutable and overwhelmingly the common case, so a fixed
 // band of them is interned once (the technique every dynamic-language runtime
-// uses for fixnums). cachedInt returns the shared instance when v is in band.
+// uses for fixnums). intern returns the shared instance when the value is an
+// in-band integer.
 const (
 	cacheMin = -128
 	cacheMax = 256
@@ -95,12 +96,19 @@ var smallInts = func() [cacheMax - cacheMin + 1]Interface {
 	return a
 }()
 
-func cachedInt(v float64) (Interface, bool) {
-	iv := int64(v)
-	if float64(iv) == v && iv >= cacheMin && iv <= cacheMax {
-		return smallInts[iv-cacheMin], true
+// intern returns the shared instance for an in-band small integer, or a freshly
+// constructed Number otherwise. It never returns nil: an out-of-band integer or
+// a float yields a new *data. Returning a nil Interface would defeat the
+// Null-Object contract of Number (a Number is never a nil interface; the null
+// variant is a concrete value reporting IsNull() == true).
+func intern(value float64, isInt bool) Interface {
+	if isInt {
+		iv := int64(value)
+		if float64(iv) == value && iv >= cacheMin && iv <= cacheMax {
+			return smallInts[iv-cacheMin]
+		}
 	}
-	return nil, false
+	return &data{value: value, isInt: isInt}
 }
 
 func New(options ...Option) Interface {
@@ -111,16 +119,11 @@ func New(options ...Option) Interface {
 	for _, opt := range options {
 		opt(d)
 	}
-	// Return the shared instance for an in-band small integer (interning: the
-	// constructed d is discarded, so the alloc count is unchanged, but equal
-	// small Numbers now share storage and identity). The real allocation win is
-	// in build() — the arithmetic-result path, which has no options to apply.
-	if d.isInt {
-		if c, ok := cachedInt(d.value); ok {
-			return c
-		}
-	}
-	return d
+	// Intern in-band small integers: equal small Numbers share storage and
+	// identity (the constructed d is discarded on a hit, so the alloc count is
+	// unchanged). The real allocation win is in build() — the arithmetic-result
+	// path, which has no options to apply.
+	return intern(d.value, d.isInt)
 }
 
 /*
@@ -176,13 +179,7 @@ func (d data) IsNull() bool {
 // build constructs a Number preserving integer-ness only when both operands
 // are integers (mirroring Go's numeric tower for these operations).
 func build(value float64, lhsInt bool, rhs Interface) Interface {
-	if lhsInt && rhs.IsInt() {
-		if c, ok := cachedInt(value); ok {
-			return c
-		}
-		return &data{value: value, isInt: true}
-	}
-	return &data{value: value, isInt: false}
+	return intern(value, lhsInt && rhs.IsInt())
 }
 
 /*
