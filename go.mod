@@ -3,7 +3,7 @@ module github.com/go-composites/number
 go 1.26.4
 
 require (
-	github.com/go-composites/boolean v0.0.0-20260912233919-bc1641ff4cff
+	github.com/go-composites/boolean v0.0.0-20260915000852-2cecd4c79165
 	github.com/go-composites/error v0.0.0-20260910233857-13fdb6fa03c6
 	github.com/go-composites/result v0.0.0-20260912234301-de30d2f90af6
 	github.com/onsi/ginkgo/v2 v2.32.2
