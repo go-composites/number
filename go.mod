@@ -1,6 +1,6 @@
 module github.com/go-composites/number
 
-go 1.26.4
+go 1.27.1
 
 require (
 	github.com/go-composites/boolean v0.0.0-20261001005819-7829d550cf44
