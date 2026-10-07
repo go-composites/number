@@ -3,9 +3,9 @@ module github.com/go-composites/number
 go 1.27.1
 
 require (
-	github.com/go-composites/boolean v0.0.0-20261004201730-d381fd58d29e
+	github.com/go-composites/boolean v0.0.0-20261006020242-6d69b7ea2bb3
 	github.com/go-composites/error v0.0.0-20261004233631-3186f2071cf7
-	github.com/go-composites/result v0.0.0-20261004231234-403cbfca76c4
+	github.com/go-composites/result v0.0.0-20261006020718-14f01380a20a
 	github.com/onsi/ginkgo/v2 v2.33.0
 	github.com/onsi/gomega v1.44.0
 )
@@ -13,8 +13,8 @@ require (
 require (
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/go-composites/array v0.0.0-20260929012314-b34dd2208c46 // indirect
-	github.com/go-composites/null v0.0.0-20260903220223-c1d743488d23 // indirect
-	github.com/go-composites/string v0.0.0-20261001010216-fcf54a81e3db // indirect
+	github.com/go-composites/null v0.0.0-20261004234613-b811f56c1c66 // indirect
+	github.com/go-composites/string v0.0.0-20261004232445-a7ad20be796e // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
